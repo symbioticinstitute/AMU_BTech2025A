@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMU B.Tech Admission Test 2025 - Rank Predictor</title>
+    <style>
+        :root {
+            --primary: #1a2942;
+            --secondary: #4a6fa5;
+            --accent: #5d9cec;
+            --light: #ecf0f1;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --info: #3498db;
+            --danger: #e74c3c;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .calculator-card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 25px 20px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        
+        .header p {
+            margin: 10px 0 0;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .form-container {
+            padding: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 15px;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+            box-sizing: border-box;
+        }
+        
+        input:focus, select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(93, 156, 236, 0.2);
+            outline: none;
+        }
+        
+        button {
+            background: linear-gradient(to right, var(--secondary), var(--accent));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 14px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(93, 156, 236, 0.2);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 14px rgba(93, 156, 236, 0.3);
+        }
+        
+        .result {
+            display: none;
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 10px;
+            background-color: #f1f9ff;
+            border-left: 5px solid var(--info);
+        }
+        
+        .result h2 {
+            margin-top: 0;
+            color: var(--primary);
+            font-size: 20px;
+        }
+        
+        .result-item {
+            margin: 15px 0;
+            font-size: 16px;
+            display: flex;
+            justify-content: space-between;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed #ddd;
+        }
+        
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        
+        .result-value {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .result-rank {
+            font-size: 32px;
+            font-weight: bold;
+            color: var(--info);
+            text-align: center;
+            margin: 20px 0;
+            padding: 10px;
+            background: #e1f0fa;
+            border-radius: 8px;
+        }
+        
+        .result-note {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            background-color: #fdf2e9;
+            border-left: 4px solid var(--warning);
+            font-size: 14px;
+            display: none;
+        }
+        
+        .result-below-cutoff {
+            background-color: #fae5e5;
+            border-left: 4px solid var(--danger);
+        }
+        
+        .info-card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+        
+        .info-heading {
+            color: var(--primary);
+            font-size: 18px;
+            margin-top: 0;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .info-point {
+            margin: 12px 0;
+            font-size: 14px;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .info-icon {
+            color: var(--info);
+            margin-right: 10px;
+            font-size: 18px;
+            min-width: 20px;
+            text-align: center;
+        }
+        
+        .contact {
+            margin-top: 10px;
+            padding: 12px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .error {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 20px;
+            }
+            
+            .form-container {
+                padding: 20px;
+            }
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        
+        .badge-info {
+            background-color: #e1f0fa;
+            color: var(--info);
+        }
+        
+        .seat-info {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+        
+        .seat-item {
+            flex-basis: 48%;
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            text-align: center;
+        }
+        
+        .total-seats {
+            background-color: #e1f5fe;
+            border: 2px solid #29b6f6;
+            color: #0277bd;
+        }
+        
+        .seat-count {
+            font-weight: 600;
+            color: var(--secondary);
+            display: block;
+            font-size: 18px;
+            margin-top: 5px;
+        }
+        
+        .total-seats .seat-count {
+            color: #0277bd;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="calculator-card">
+            <div class="header">
+                <h1>AMU B.Tech Admission Test 2025</h1>
+                <p>Expected Rank Calculator</p>
+                <span class="badge badge-info">14,000 Students Appeared This Year</span>
+            </div>
+            
+            <div class="form-container">
+                <form id="rankForm">
+                    <div class="form-group">
+                        <label for="name">Student Name:</label>
+                        <input type="text" id="name" placeholder="Enter student name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="marks">Marks Obtained:</label>
+                        <input type="number" id="marks" min="0" max="100" placeholder="Enter marks (0-100)" required>
+                        <div id="marksError" class="error">Please enter marks between 0 and 100.</div>
+                    </div>
+                    
+                    <button type="submit" id="submitBtn">Calculate Expected Rank</button>
+                </form>
+            </div>
+        </div>
+        
+        <div id="result" class="result">
+            <h2>Rank Prediction Results</h2>
+            <div class="result-item">
+                <span>Student Name:</span>
+                <span id="resultName" class="result-value"></span>
+            </div>
+            <div class="result-item">
+                <span>Marks:</span>
+                <span id="resultMarks" class="result-value"></span>
+            </div>
+            
+            <div class="result-rank" id="resultRank">Rank: 0</div>
+            
+            <div class="result-item" id="waitingListSection">
+                <span>Waiting List Rank:</span>
+                <span id="resultWaitingRank" class="result-value"></span>
+            </div>
+            
+            <div class="seat-info" id="seatInfo">
+                <!-- Seat information will be populated by JavaScript -->
+            </div>
+            
+            <div id="resultNote" class="result-note">
+                <!-- Note about cutoff or other relevant information -->
+            </div>
+        </div>
+        
+        <div class="info-card">
+            <h3 class="info-heading">Important Information</h3>
+            
+            <div class="info-point">
+                <span class="info-icon">📊</span>
+                <span>This year's examination was conducted out of 100 marks, compared to last year's 150 marks format. Rankings have been adjusted accordingly.</span>
+            </div>
+            
+            <div class="info-point">
+                <span class="info-icon">ℹ️</span>
+                <span>This expected rank calculator is based on the previous cutoffs, information collected from students, the question level of this year's paper, and cutoffs expected by different experts. It may not be 100% perfect.</span>
+            </div>
+            
+            <div class="info-point">
+                <span class="info-icon">💺</span>
+                <span>
+                    <strong>Total Seats:</strong><br>
+                    • B.Tech Program: 480 seats
+                </span>
+            </div>
+            
+            <div class="info-point">
+                <span class="info-icon">📞</span>
+                <span>If you need any help regarding counselling or have questions, please contact us:</span>
+            </div>
+            
+            <div class="contact">
+                09149822922
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Analytics code - track usage
+        let visitCount = 0;
+        let calculationCount = 0;
+        
+        // Check if localStorage is available
+        function isLocalStorageAvailable() {
+            try {
+                localStorage.setItem('test', 'test');
+                localStorage.removeItem('test');
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+        
+        // Initialize analytics
+        function initAnalytics() {
+            if (isLocalStorageAvailable()) {
+                // Increment visit count
+                visitCount = parseInt(localStorage.getItem('btechToolVisits') || '0') + 1;
+                localStorage.setItem('btechToolVisits', visitCount.toString());
+                
+                // Get calculation count
+                calculationCount = parseInt(localStorage.getItem('btechToolCalculations') || '0');
+                
+                // Log visit (you can replace this with your own analytics solution)
+                console.log(`Visit #${visitCount} recorded`);
+                
+                // You could send this data to your server via fetch API
+                // fetch('https://yourserver.com/log-visit', {
+                //     method: 'POST',
+                //     headers: {'Content-Type': 'application/json'},
+                //     body: JSON.stringify({ type: 'visit', count: visitCount })
+                // });
+            }
+        }
+        
+        // Log a calculation
+        function logCalculation(studentData) {
+            if (isLocalStorageAvailable()) {
+                calculationCount++;
+                localStorage.setItem('btechToolCalculations', calculationCount.toString());
+                
+                // Log calculation (you can replace this with your own analytics solution)
+                console.log(`Calculation #${calculationCount} recorded`, studentData);
+                
+                // You could send this data to your server via fetch API
+                // fetch('https://yourserver.com/log-calculation', {
+                //     method: 'POST',
+                //     headers: {'Content-Type': 'application/json'},
+                //     body: JSON.stringify({ 
+                //         type: 'calculation',
+                //         count: calculationCount,
+                //         data: studentData
+                //     })
+                // });
+            }
+        }
+        
+        // Wait for the DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize analytics when page loads
+            initAnalytics();
+            
+            // Get form element
+            const form = document.getElementById('rankForm');
+            
+            // Course data with reference points and cutoffs
+            // NOTE: Reference points have been adjusted from last year's 150-mark scale to this year's 100-mark scale
+            const courseData = {
+                btech: {
+                    name: "B.Tech Program",
+                    totalSeats: 480,
+                    cutoff: 30, // Estimated cutoff for this year (100-mark scale)
+                    referencePoints: [
+                        // Adjusted reference points with increased ranks by ~10%
+                        { marks: 65, rank: 10 },     // Top ranks only for 65+ marks
+                        { marks: 55, rank: 20 },     // Ranks 20-100 for 55-65 marks
+                        { marks: 40, rank: 100 },    // Adjusted from 90
+                        { marks: 33.33, rank: 220 },
+                        { marks: 33, rank: 300 },
+                        { marks: 32.67, rank: 310 },
+                        { marks: 32, rank: 330 },
+                        { marks: 23.33, rank: 620 }
+                    ],
+                    // Adjustment factor between this year and last year (scaled values)
+                    adjustment: 0 // No adjustment needed since we've already scaled the reference points
+                }
+            };
+            
+            // Add submit event listener
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                calculateRank();
+            });
+            
+            // Also add click event to button as a backup
+            document.getElementById('submitBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                calculateRank();
+            });
+            
+            // Function to calculate and display rank
+            function calculateRank() {
+                // Reset note display
+                const resultNoteElement = document.getElementById('resultNote');
+                resultNoteElement.style.display = 'none';
+                resultNoteElement.classList.remove('result-below-cutoff');
+                resultNoteElement.textContent = '';
+                
+                // Get input values
+                const name = document.getElementById('name').value.trim();
+                const marksInput = document.getElementById('marks').value.trim();
+                const marks = parseFloat(marksInput);
+                
+                // Validate inputs
+                if (name === '') {
+                    alert('Please enter student name');
+                    return;
+                }
+                
+                // Validate marks
+                if (marksInput === '' || isNaN(marks) || marks < 0 || marks > 100) {
+                    document.getElementById('marksError').style.display = 'block';
+                    return;
+                } else {
+                    document.getElementById('marksError').style.display = 'none';
+                }
+                
+                // Get course data
+                const course = courseData.btech;
+                
+                // Apply any adjustment if needed
+                const adjustedMarks = marks + course.adjustment;
+                
+                // Add note about exam pattern change and self-finance seats
+                resultNoteElement.textContent = `Note: Since the exam pattern has changed this year, ranks are estimated. There are also a few self-finance seats in each branch that have not been considered in this calculation.`;
+                resultNoteElement.style.display = 'block';
+                
+                // Calculate expected rank
+                let expectedRank = calculateExpectedRank(adjustedMarks, course);
+                
+                // Calculate waiting list rank starting from 1
+                let waitingListRank = "Not in waiting list";
+                if (expectedRank > course.totalSeats) {
+                    waitingListRank = expectedRank - course.totalSeats;
+                }
+                
+                // Display results
+                document.getElementById('resultName').textContent = name;
+                document.getElementById('resultMarks').textContent = marks;
+                document.getElementById('resultRank').textContent = `Rank: ${expectedRank}`;
+                document.getElementById('resultWaitingRank').textContent = waitingListRank;
+                document.getElementById('result').style.display = 'block';
+                
+                // Log this calculation for analytics
+                logCalculation({
+                    name: name,
+                    marks: marks,
+                    rank: expectedRank,
+                    waitingList: waitingListRank
+                });
+                
+                // Update seat information with highlighted total seats
+                const seatInfoDiv = document.getElementById('seatInfo');
+                seatInfoDiv.innerHTML = `
+                    <div class="seat-item total-seats">
+                        Total Seats
+                        <span class="seat-count">${course.totalSeats}</span>
+                    </div>
+                    <div class="seat-item">
+                        Your Position
+                        <span class="seat-count">${expectedRank <= course.totalSeats ? 'Selected' : 'Waiting List'}</span>
+                    </div>
+                `;
+                
+                // Show or hide waiting list section based on rank
+                document.getElementById('waitingListSection').style.display = 
+                    expectedRank <= course.totalSeats ? 'none' : 'flex';
+                
+                // Scroll to results
+                document.getElementById('result').scrollIntoView({behavior: 'smooth'});
+            }
+            
+            // Function to calculate expected rank based on adjusted marks
+            function calculateExpectedRank(adjustedMarks, course) {
+                // Get reference points and sort them by marks (highest to lowest)
+                const refPoints = course.referencePoints;
+                const sortedRefPoints = [...refPoints].sort((a, b) => b.marks - a.marks);
+                
+                let expectedRank;
+                
+                if (adjustedMarks >= 65) {
+                    // Special case: Marks 65+ get ranks 1-10
+                    expectedRank = Math.max(1, Math.min(10, Math.round(10 - (adjustedMarks - 65))));
+                } else if (adjustedMarks >= 55 && adjustedMarks < 65) {
+                    // Special case: Marks 55-65 get ranks 20-100
+                    const rankRange = 100 - 20;
+                    const markRange = 65 - 55;
+                    const markPosition = 65 - adjustedMarks;
+                    expectedRank = Math.round(20 + (markPosition / markRange) * rankRange);
+                } else if (adjustedMarks >= sortedRefPoints[0].marks) {
+                    // Marks higher than highest reference point
+                    const marksDiff = adjustedMarks - sortedRefPoints[0].marks;
+                    // Assume rank improves by roughly 12 per mark above highest reference (reduced from 15)
+                    expectedRank = Math.max(1, Math.round(sortedRefPoints[0].rank - (marksDiff * 12)));
+                } else if (adjustedMarks <= sortedRefPoints[sortedRefPoints.length - 1].marks) {
+                    // Marks lower than lowest reference point
+                    const marksDiff = sortedRefPoints[sortedRefPoints.length - 1].marks - adjustedMarks;
+                    // Assume rank decreases by roughly 35 per mark below lowest reference (increased from 30)
+                    expectedRank = Math.round(sortedRefPoints[sortedRefPoints.length - 1].rank + (marksDiff * 35));
+                } else {
+                    // Marks between reference points - use linear interpolation
+                    // Find the two reference points to interpolate between
+                    let lowerRef, upperRef;
+                    
+                    for (let i = 0; i < sortedRefPoints.length - 1; i++) {
+                        if (adjustedMarks <= sortedRefPoints[i].marks && adjustedMarks >= sortedRefPoints[i + 1].marks) {
+                            upperRef = sortedRefPoints[i];
+                            lowerRef = sortedRefPoints[i + 1];
+                            break;
+                        }
+                    }
+                    
+                    // Calculate using linear interpolation
+                    const marksDiff = upperRef.marks - lowerRef.marks;
+                    const rankDiff = lowerRef.rank - upperRef.rank;
+                    const markRatio = (adjustedMarks - lowerRef.marks) / marksDiff;
+                    expectedRank = Math.round(lowerRef.rank - (markRatio * rankDiff));
+                }
+                
+                // Ensure rank is at least 1
+                return Math.max(1, expectedRank);
+            }
+        });
+    </script>
+</body>
+</html>
