@@ -281,6 +281,29 @@
             color: #0277bd;
             font-weight: 700;
         }
+        
+        /* New scrolling banner styles */
+        .scrolling-banner {
+            background-color: #e74c3c;
+            color: white;
+            padding: 8px 0;
+            margin-top: 10px;
+            overflow: hidden;
+            white-space: nowrap;
+            border-radius: 4px;
+        }
+        
+        .scrolling-text {
+            display: inline-block;
+            animation: scroll-left 20s linear infinite;
+            padding-left: 100%;
+            font-weight: 600;
+        }
+        
+        @keyframes scroll-left {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
     </style>
 </head>
 <body>
@@ -289,7 +312,10 @@
             <div class="header">
                 <h1>AMU B.Tech Admission Test 2025</h1>
                 <p>Expected Rank Calculator</p>
-                <span class="badge badge-info">13,676 Students Appeared This Year</span>
+                <span class="badge badge-info">13,639 Students Appeared This Year</span>
+                <div class="scrolling-banner">
+                    <div class="scrolling-text">This rank predictor is designed for general/external candidates only. There are various categories for AMU admissions (SC/ST/OBC/Internal), and for those categories, there will be slight variations in marks and ranks.</div>
+                </div>
             </div>
             
             <div class="form-container">
@@ -342,7 +368,7 @@
             
             <div class="info-point" style="background-color: #e1f5fe; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
                 <span class="info-icon">⚠️</span>
-                <span><strong>Note:</strong> This rank predictor is designed for general(external) candidates only. There are various categories for AMU admissions, and for those categories, there will be slight variations in marks and ranks.</span>
+                <span><strong>Note:</strong> This rank predictor is designed for general/external candidates only. There are various categories for AMU admissions (SC/ST/OBC/Internal), and for those categories, there will be slight variations in marks and ranks.</span>
             </div>
             
             <div class="info-point">
@@ -511,7 +537,7 @@
                     document.getElementById('resultRank').textContent = 'Not Available';
                     
                     // Display the warning message
-                    resultNoteElement.textContent = 'It is almost impossible to get selected with this marks .';
+                    resultNoteElement.textContent = 'It is almost impossible to get selected with marks less than or equal to 13. We recommend focusing on other options.';
                     resultNoteElement.style.display = 'block';
                     resultNoteElement.classList.add('result-below-cutoff');
                     
