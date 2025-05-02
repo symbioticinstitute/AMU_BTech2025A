@@ -289,8 +289,7 @@
             <div class="header">
                 <h1>AMU B.Tech Admission Test 2025</h1>
                 <p>Expected Rank Calculator</p>
-                <div style="font-weight: bold; color: #ffeb3b; text-align: center; margin-top: 10px; font-size: 18px; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">SYMBIOTIC INSTITUTE</div>
-                <span class="badge badge-info">13,639 Students Appeared This Year</span>
+                <span class="badge badge-info">14,000 Students Appeared This Year</span>
             </div>
             
             <div class="form-container">
@@ -341,16 +340,16 @@
         <div class="info-card">
             <h3 class="info-heading">Important Information</h3>
             
+            <div class="info-point" style="background-color: #e1f5fe; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
+                <span class="info-icon">⚠️</span>
+                <span><strong>Note:</strong> This rank predictor is designed for general/external candidates only. There are various categories for AMU admissions (SC/ST/OBC/Internal), and for those categories, there will be slight variations in marks and ranks.</span>
+            </div>
+            
             <div class="info-point">
                 <span class="info-icon">📊</span>
-                <div class="info-point">
-    <span class="info-icon">📊</span>
-       <span>This year's examination was conducted out of 100 marks, compared to last year's 150 marks format. Rankings have been adjusted accordingly.</span>
+                <span>This year's examination was conducted out of 100 marks, compared to last year's 150 marks format. Rankings have been adjusted accordingly.</span>
             </div>
-             <div class="info-point" style="background-color: #e1f5fe; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
-        <span class="info-icon">⚠️</span>
-        <span><strong>Note:</strong> This rank predictor is designed for general/external candidates only. There are various categories for AMU admissions (SC/ST/OBC/Internal), and for those categories, there will be slight variations in marks and ranks.</span>
-    </div>
+            
             <div class="info-point">
                 <span class="info-icon">ℹ️</span>
                 <span>This expected rank calculator is based on the previous cutoffs, information collected from students, the question level of this year's paper, and cutoffs expected by different experts. It may not be 100% perfect.</span>
@@ -504,47 +503,48 @@
                 } else {
                     document.getElementById('marksError').style.display = 'none';
                 }
+
+                // Add this after the marks validation but before calculating expected rank
                 if (marks <= 13) {
-    document.getElementById('resultName').textContent = name;
-    document.getElementById('resultMarks').textContent = marks;
-    document.getElementById('resultRank').textContent = 'Not Available';
-    
-    // Display the warning message
-    resultNoteElement.textContent = 'It is almost impossible to get selected with marks less than or equal to 13. We recommend focusing on other options.';
-    resultNoteElement.style.display = 'block';
-    resultNoteElement.classList.add('result-below-cutoff');
-    
-    // Hide the waiting list section
-    document.getElementById('waitingListSection').style.display = 'none';
-    
-    // Update seat information
-    const seatInfoDiv = document.getElementById('seatInfo');
-    seatInfoDiv.innerHTML = `
-        <div class="seat-item total-seats">
-            Total Seats
-            <span class="seat-count">${course.totalSeats}</span>
-        </div>
-        <div class="seat-item">
-            Your Position
-            <span class="seat-count">Not Eligible</span>
-        </div>
-    `;
-    
-    document.getElementById('result').style.display = 'block';
-    document.getElementById('result').scrollIntoView({behavior: 'smooth'});
-    
-    // Log this calculation for analytics
-    logCalculation({
-        name: name,
-        marks: marks,
-        rank: 'Not Available',
-        waitingList: 'Not Eligible'
-    });
-    
-    return; // Exit the function early
-}
-
-
+                    document.getElementById('resultName').textContent = name;
+                    document.getElementById('resultMarks').textContent = marks;
+                    document.getElementById('resultRank').textContent = 'Not Available';
+                    
+                    // Display the warning message
+                    resultNoteElement.textContent = 'It is almost impossible to get selected with marks less than or equal to 13. We recommend focusing on other options.';
+                    resultNoteElement.style.display = 'block';
+                    resultNoteElement.classList.add('result-below-cutoff');
+                    
+                    // Hide the waiting list section
+                    document.getElementById('waitingListSection').style.display = 'none';
+                    
+                    // Update seat information
+                    const seatInfoDiv = document.getElementById('seatInfo');
+                    seatInfoDiv.innerHTML = `
+                        <div class="seat-item total-seats">
+                            Total Seats
+                            <span class="seat-count">${course.totalSeats}</span>
+                        </div>
+                        <div class="seat-item">
+                            Your Position
+                            <span class="seat-count">Not Eligible</span>
+                        </div>
+                    `;
+                    
+                    document.getElementById('result').style.display = 'block';
+                    document.getElementById('result').scrollIntoView({behavior: 'smooth'});
+                    
+                    // Log this calculation for analytics
+                    logCalculation({
+                        name: name,
+                        marks: marks,
+                        rank: 'Not Available',
+                        waitingList: 'Not Eligible'
+                    });
+                    
+                    return; // Exit the function early
+                }
+                
                 // Get course data
                 const course = courseData.btech;
                 
