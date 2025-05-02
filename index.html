@@ -499,7 +499,47 @@
                 } else {
                     document.getElementById('marksError').style.display = 'none';
                 }
-                
+                if (marks <= 13) {
+    document.getElementById('resultName').textContent = name;
+    document.getElementById('resultMarks').textContent = marks;
+    document.getElementById('resultRank').textContent = 'Not Available';
+    
+    // Display the warning message
+    resultNoteElement.textContent = 'It is almost impossible to get selected with marks less than or equal to 13. We recommend focusing on other options.';
+    resultNoteElement.style.display = 'block';
+    resultNoteElement.classList.add('result-below-cutoff');
+    
+    // Hide the waiting list section
+    document.getElementById('waitingListSection').style.display = 'none';
+    
+    // Update seat information
+    const seatInfoDiv = document.getElementById('seatInfo');
+    seatInfoDiv.innerHTML = `
+        <div class="seat-item total-seats">
+            Total Seats
+            <span class="seat-count">${course.totalSeats}</span>
+        </div>
+        <div class="seat-item">
+            Your Position
+            <span class="seat-count">Not Eligible</span>
+        </div>
+    `;
+    
+    document.getElementById('result').style.display = 'block';
+    document.getElementById('result').scrollIntoView({behavior: 'smooth'});
+    
+    // Log this calculation for analytics
+    logCalculation({
+        name: name,
+        marks: marks,
+        rank: 'Not Available',
+        waitingList: 'Not Eligible'
+    });
+    
+    return; // Exit the function early
+}
+
+
                 // Get course data
                 const course = courseData.btech;
                 
