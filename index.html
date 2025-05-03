@@ -469,26 +469,12 @@
             // Get form element
             const form = document.getElementById('rankForm');
             
-            // Course data with reference points and cutoffs
-            // NOTE: Reference points have been adjusted from last year's 150-mark scale to this year's 100-mark scale
+            // Course data with total seats
             const courseData = {
                 btech: {
                     name: "B.Tech Program",
                     totalSeats: 480,
-                    cutoff: 30, // Estimated cutoff for this year (100-mark scale)
-                    referencePoints: [
-                        // Adjusted reference points with increased ranks by ~10%
-                        { marks: 65, rank: 10 },     // Top ranks only for 65+ marks
-                        { marks: 55, rank: 20 },     // Ranks 20-100 for 55-65 marks
-                        { marks: 40, rank: 100 },    // Adjusted from 90
-                        { marks: 33.33, rank: 220 },
-                        { marks: 33, rank: 300 },
-                        { marks: 32.67, rank: 310 },
-                        { marks: 32, rank: 330 },
-                        { marks: 23.33, rank: 620 }
-                    ],
-                    // Adjustment factor between this year and last year (scaled values)
-                    adjustment: 0 // No adjustment needed since we've already scaled the reference points
+                    cutoff: 20 // Minimum marks required for consideration
                 }
             };
             
@@ -531,71 +517,97 @@
                     document.getElementById('marksError').style.display = 'none';
                 }
 
-                // Add this after the marks validation but before calculating expected rank
-                if (marks <= 13) {
-                    document.getElementById('resultName').textContent = name;
-                    document.getElementById('resultMarks').textContent = marks;
-                    document.getElementById('resultRank').textContent = 'Not Available';
-                    
-                    // Display the warning message
-                    resultNoteElement.textContent = 'It is almost impossible to get selected with this marks.';
-                    resultNoteElement.style.display = 'block';
-                    resultNoteElement.classList.add('result-below-cutoff');
-                    
-                    // Hide the waiting list section
-                    document.getElementById('waitingListSection').style.display = 'none';
-                    
-                    // Update seat information
-                    const seatInfoDiv = document.getElementById('seatInfo');
-                    seatInfoDiv.innerHTML = `
-                        <div class="seat-item total-seats">
-                            Total Seats
-                            <span class="seat-count">${course.totalSeats}</span>
-                        </div>
-                        <div class="seat-item">
-                            Your Position
-                            <span class="seat-count">Not Eligible</span>
-                        </div>
-                    `;
-                    
-                    document.getElementById('result').style.display = 'block';
-                    document.getElementById('result').scrollIntoView({behavior: 'smooth'});
-                    
-                    // Log this calculation for analytics
-                    logCalculation({
-                        name: name,
-                        marks: marks,
-                        rank: 'Not Available',
-                        waitingList: 'Not Eligible'
-                    });
-                    
-                    return; // Exit the function early
-                }
-                
                 // Get course data
                 const course = courseData.btech;
                 
-                // Apply any adjustment if needed
-                const adjustedMarks = marks + course.adjustment;
-                
-                // Add note about exam pattern change and self-finance seats
-                resultNoteElement.textContent = `Note: Since the exam pattern has changed this year, ranks are estimated. There are also a few self-finance seats in each branch that have not been considered in this calculation.`;
-                resultNoteElement.style.display = 'block';
-                
-                // Calculate expected rank
-                let expectedRank = calculateExpectedRank(adjustedMarks, course);
-                
-                // Calculate waiting list rank starting from 1
+                // Calculate expected rank based on new logic
+                let expectedRank;
                 let waitingListRank = "Not in waiting list";
-                if (expectedRank > course.totalSeats) {
-                    waitingListRank = expectedRank - course.totalSeats;
+                let statusMessage = "";
+                
+                if (marks < course.cutoff) {
+                    // Less than cutoff marks
+                    expectedRank = 'Not Available';
+                    statusMessage = 'It is almost impossible to get selected with this marks.';
+                    resultNoteElement.style.display = 'block';
+                    resultNoteElement.classList.add('result-below-cutoff');
+                    resultNoteElement.textContent = statusMessage;
+                } else if (marks >= 60) {
+                    // For marks 60+: Rank between 1-20
+                    // Higher marks get better ranks
+                    expectedRank = Math.max(1, Math.min(20, Math.ceil(21 - (marks - 59) * 0.5)));
+                    statusMessage = `Congratulations! With ${marks} marks, you have an excellent chance of admission in the top ranks.`;
+                    resultNoteElement.style.display = 'block';
+                    resultNoteElement.textContent = statusMessage;
+                } else if (marks >= 38 && marks < 60) {
+                    // For marks 38-60: Rank between 20-480
+                    // Approximately 8 students per mark difference
+                    // 60 marks = rank 20, 38 marks = rank 480
+                    // Total range: 60-38 = 22 marks
+                    // Rank range: 480-20 = 460 ranks
+                    // 460/22 ≈ 20.9 ranks per mark
+                    const rankRange = 460; // From rank 20 to 480
+                    const markRange = 22;  // From 38 to 60
+                    const markDifference = 60 - marks;
+                    
+                    // Calculate rank: start at 20 and move down by ~21 ranks per mark
+                    expectedRank = Math.round(20 + (markDifference * (rankRange / markRange)));
+                    
+                    // Add some controlled randomness for natural distribution (±3 ranks)
+                    const randomFactor = Math.floor(Math.random() * 7) - 3;
+                    expectedRank = Math.max(20, Math.min(480, expectedRank + randomFactor));
+                    
+                    statusMessage = `With ${marks} marks, you are likely to get a seat in the B.Tech program.`;
+                    resultNoteElement.style.display = 'block';
+                    resultNoteElement.textContent = statusMessage;
+                } else if (marks >= 20 && marks < 38) {
+                    // For marks 20-38: Waiting list 1-350
+                    // 38 marks = waiting list 1, 20 marks = waiting list 350
+                    // Total range: 38-20 = 18 marks
+                    // Waiting list range: 350-1 = 349 positions
+                    const waitingRange = 349;
+                    const markRange = 18;
+                    const markDifference = 38 - marks;
+                    
+                    // Calculate waiting list position
+                    const waitingPosition = Math.round(1 + (markDifference * (waitingRange / markRange)));
+                    
+                    // Add some controlled randomness (±5 positions)
+                    const randomFactor = Math.floor(Math.random() * 11) - 5;
+                    waitingListRank = Math.max(1, Math.min(350, waitingPosition + randomFactor));
+                    
+                    expectedRank = course.totalSeats + waitingListRank;
+                    statusMessage = `With ${marks} marks, you are on the waiting list. You may be called if seats remain vacant after the main admissions.`;
+                    resultNoteElement.style.display = 'block';
+                    resultNoteElement.textContent = statusMessage;
+                } else {
+                    // For marks < 20 (but this is already handled by the cutoff check)
+                    expectedRank = 'Not Available';
+                    statusMessage = 'It is almost impossible to get selected with this marks.';
+                    resultNoteElement.style.display = 'block';
+                    resultNoteElement.classList.add('result-below-cutoff');
+                    resultNoteElement.textContent = statusMessage;
                 }
                 
                 // Display results
                 document.getElementById('resultName').textContent = name;
                 document.getElementById('resultMarks').textContent = marks;
-                document.getElementById('resultRank').textContent = `Rank: ${expectedRank}`;
-                document.getElementById('resultWaitingRank').textContent = waitingListRank;
+                
+                if (expectedRank === 'Not Available') {
+                    document.getElementById('resultRank').textContent = expectedRank;
+                    document.getElementById('waitingListSection').style.display = 'none';
+                } else {
+                    document.getElementById('resultRank').textContent = `Rank: ${expectedRank}`;
+                    
+                    // Show or hide waiting list section based on rank
+                    if (expectedRank <= course.totalSeats) {
+                        document.getElementById('waitingListSection').style.display = 'none';
+                    } else {
+                        document.getElementById('waitingListSection').style.display = 'flex';
+                        document.getElementById('resultWaitingRank').textContent = waitingListRank;
+                    }
+                }
+                
                 document.getElementById('result').style.display = 'block';
                 
                 // Log this calculation for analytics
@@ -606,8 +618,14 @@
                     waitingList: waitingListRank
                 });
                 
-                // Update seat information with highlighted total seats
+                // Update seat information with appropriate status
                 const seatInfoDiv = document.getElementById('seatInfo');
+                let statusText = 'Not Eligible';
+                
+                if (expectedRank !== 'Not Available') {
+                    statusText = expectedRank <= course.totalSeats ? 'Selected' : 'Waiting List';
+                }
+                
                 seatInfoDiv.innerHTML = `
                     <div class="seat-item total-seats">
                         Total Seats
@@ -615,67 +633,12 @@
                     </div>
                     <div class="seat-item">
                         Your Position
-                        <span class="seat-count">${expectedRank <= course.totalSeats ? 'Selected' : 'Waiting List'}</span>
+                        <span class="seat-count">${statusText}</span>
                     </div>
                 `;
                 
-                // Show or hide waiting list section based on rank
-                document.getElementById('waitingListSection').style.display = 
-                    expectedRank <= course.totalSeats ? 'none' : 'flex';
-                
                 // Scroll to results
                 document.getElementById('result').scrollIntoView({behavior: 'smooth'});
-            }
-            
-            // Function to calculate expected rank based on adjusted marks
-            function calculateExpectedRank(adjustedMarks, course) {
-                // Get reference points and sort them by marks (highest to lowest)
-                const refPoints = course.referencePoints;
-                const sortedRefPoints = [...refPoints].sort((a, b) => b.marks - a.marks);
-                
-                let expectedRank;
-                
-                if (adjustedMarks >= 65) {
-                    // Special case: Marks 65+ get ranks 1-10
-                    expectedRank = Math.max(1, Math.min(10, Math.round(10 - (adjustedMarks - 65))));
-                } else if (adjustedMarks >= 55 && adjustedMarks < 65) {
-                    // Special case: Marks 55-65 get ranks 20-100
-                    const rankRange = 100 - 20;
-                    const markRange = 65 - 55;
-                    const markPosition = 65 - adjustedMarks;
-                    expectedRank = Math.round(20 + (markPosition / markRange) * rankRange);
-                } else if (adjustedMarks >= sortedRefPoints[0].marks) {
-                    // Marks higher than highest reference point
-                    const marksDiff = adjustedMarks - sortedRefPoints[0].marks;
-                    // Assume rank improves by roughly 12 per mark above highest reference (reduced from 15)
-                    expectedRank = Math.max(1, Math.round(sortedRefPoints[0].rank - (marksDiff * 12)));
-                } else if (adjustedMarks <= sortedRefPoints[sortedRefPoints.length - 1].marks) {
-                    // Marks lower than lowest reference point
-                    const marksDiff = sortedRefPoints[sortedRefPoints.length - 1].marks - adjustedMarks;
-                    // Assume rank decreases by roughly 35 per mark below lowest reference (increased from 30)
-                    expectedRank = Math.round(sortedRefPoints[sortedRefPoints.length - 1].rank + (marksDiff * 35));
-                } else {
-                    // Marks between reference points - use linear interpolation
-                    // Find the two reference points to interpolate between
-                    let lowerRef, upperRef;
-                    
-                    for (let i = 0; i < sortedRefPoints.length - 1; i++) {
-                        if (adjustedMarks <= sortedRefPoints[i].marks && adjustedMarks >= sortedRefPoints[i + 1].marks) {
-                            upperRef = sortedRefPoints[i];
-                            lowerRef = sortedRefPoints[i + 1];
-                            break;
-                        }
-                    }
-                    
-                    // Calculate using linear interpolation
-                    const marksDiff = upperRef.marks - lowerRef.marks;
-                    const rankDiff = lowerRef.rank - upperRef.rank;
-                    const markRatio = (adjustedMarks - lowerRef.marks) / marksDiff;
-                    expectedRank = Math.round(lowerRef.rank - (markRatio * rankDiff));
-                }
-                
-                // Ensure rank is at least 1
-                return Math.max(1, expectedRank);
             }
         });
     </script>
